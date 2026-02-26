@@ -1,41 +1,25 @@
 import os
 import shutil
+from pathlib import Path
 
-Scieszka='C:/Users/PC/Desktop'
+Desktop = Path.home() / "Desktop"
+Obrazy_systemowe = Path.home() / "Pictures"   
+Programy_folder = Desktop / "Programy"
+Teksty_folder = Desktop / "Pliki_tekstowe"
 
-#funkcja tworzenia folderów
-def folder(foldery):
-    #to łączy w jedną sicieszkę
-    pelna_sciezka = os.path.join(Scieszka, foldery)
-
-    if not os.path.exists(pelna_sciezka):
-        os.mkdir(pelna_sciezka)
-
-    else:
-        print('Juz istnieje')  
-    return pelna_sciezka
+Kategorie = {
+    Teksty_folder: ['.txt', '.pdf', '.docx', '.rtf'],
+    Obrazy_systemowe: ['.jpg', '.png', '.jpeg'],
+    Programy_folder: ['.exe', '.lnk'],
+}
 
 
-lista_plikow=os.listdir(Scieszka)
+for folder in [Teksty_folder, Programy_folder]:
+    folder.mkdir(exist_ok=True)
 
-#print(lista_plikow)
-
-folder("Pliki_tekstowe")
-folder("Foldery")
-folder("Programy")
-
-for pliki in lista_plikow:
-    pelna_sciezka = os.path.join(Scieszka, pliki)
-    nazwa, rozszerzenie = os.path.splitext(pliki)
-
-    if rozszerzenie.lower() == '.txt' or rozszerzenie.lower() == '.pdf' or rozszerzenie.lower() == '.docx' or rozszerzenie.lower() == '.rtf':
-        shutil.move(os.path.join(Scieszka,pliki), os.path.join(Scieszka, "Pliki_tekstowe"))
-    if rozszerzenie.lower() == '.jpg':
-        shutil.move(os.path.join(Scieszka,pliki), 'C:/Users/PC/Obrazy')
-    if rozszerzenie.lower() == '.exe':
-        shutil.move(os.path.join(Scieszka,pliki), os.path.join(Scieszka, "Programy"))
-    if pliki not in  ["Foldery","Nowy folder (3)","Pliki_tekstowe","Programy" ]:
-        if os.path.isdir(pelna_sciezka):
-        
-            shutil.move(os.path.join(Scieszka,pliki), os.path.join(Scieszka, "Foldery"))
-    
+for plik in Desktop.iterdir():
+    if plik.is_file():
+        for folder_docelowy, rozszerzenia in Kategorie.items():
+            if plik.suffix.lower() in rozszerzenia:
+                shutil.move(str(plik), str(folder_docelowy / plik.name))
+                break
